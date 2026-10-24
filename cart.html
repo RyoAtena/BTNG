@@ -3,79 +3,183 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LUXE STORE — Cart</title>
+  <title>ATELIER LUXE — Shopping Bag & Checkout</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
+  <!-- ===== TOP ANNOUNCEMENT BAR ===== -->
+  <div class="announcement-bar">
+    <span>Secure 256-Bit Encrypted Checkout</span>
+    <span class="dot">•</span>
+    <span>Gunakan kode promo <span class="highlight">LUXE20</span> untuk diskon 20%</span>
+  </div>
+
   <!-- ===== NAVBAR ===== -->
-  <header class="navbar">
+  <header class="navbar" id="navbar">
     <div class="nav-container">
-      <a class="logo" href="index.html">LUXE<span>STORE</span></a>
-      <nav class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="cart.html" class="active">Cart <span class="cart-badge" id="cartCount">0</span></a>
+      <nav class="nav-left">
+        <a href="index.html" class="nav-link">← Back to Boutique</a>
       </nav>
+
+      <a href="index.html" class="brand-logo">
+        ATELIER LUXE
+        <small>PARIS • JAKARTA • TOKYO</small>
+      </a>
+
+      <div class="nav-right">
+        <span class="icon-btn" style="cursor:default;">
+          <span>Bag Items:</span>
+          <span class="badge-pill" id="cartCount">0</span>
+        </span>
+      </div>
     </div>
   </header>
 
-  <!-- ===== CART PAGE ===== -->
-  <main class="cart-page">
+  <!-- ===== CART & CHECKOUT MAIN ===== -->
+  <main class="cart-page-main">
     <div class="container">
-      <h2 class="section-title">Your Cart</h2>
+      <div class="breadcrumb">
+        <a href="index.html">Boutique</a>
+        <span>/</span>
+        <span style="color:var(--text-primary); font-weight:600;">Shopping Bag & Checkout</span>
+      </div>
 
-      <div class="cart-layout">
-        <!-- Cart Items -->
-        <div class="cart-items" id="cartItems">
-          <!-- Populated by JS -->
+      <div class="section-header" style="margin-bottom:28px;">
+        <div>
+          <div class="section-eyebrow">Your Selection</div>
+          <h1 class="section-title">Shopping Bag</h1>
         </div>
+        <button class="btn btn-outline" id="clearCartBtn" style="padding:10px 18px; font-size:0.78rem;">
+          Kosongkan Keranjang
+        </button>
+      </div>
 
-        <!-- Order Summary -->
-        <div class="order-summary">
-          <h3>Order Summary</h3>
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span id="subtotal">Rp 0</span>
-          </div>
-          <div class="summary-row">
-            <span>Shipping</span>
-            <span id="shipping">Rp 0</span>
-          </div>
-          <div class="summary-divider"></div>
-          <div class="summary-row total">
-            <span>Total</span>
-            <span id="total">Rp 0</span>
-          </div>
-          <button class="btn-primary btn-checkout" id="checkoutBtn">Checkout</button>
-          <a href="index.html" class="btn-secondary">← Continue Shopping</a>
+      <!-- Free Shipping Progress -->
+      <div class="shipping-meter" style="border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom:32px;">
+        <div id="cartShippingText" style="font-weight:600;"></div>
+        <div class="meter-bar">
+          <div class="meter-fill" id="cartShippingFill" style="width:0%;"></div>
         </div>
       </div>
 
-      <!-- Empty State -->
-      <div class="empty-cart" id="emptyCart" style="display:none;">
-        <div class="empty-icon">🛒</div>
-        <h3>Your cart is empty</h3>
-        <p>Looks like you haven't added anything yet.</p>
-        <a href="index.html" class="btn-primary">Start Shopping</a>
+      <!-- Active Cart Layout -->
+      <div class="cart-grid" id="cartActiveLayout">
+        <!-- Left: Items -->
+        <div>
+          <div class="cart-table-card" id="cartItemsContainer"></div>
+        </div>
+
+        <!-- Right: Summary & Checkout Form -->
+        <aside class="checkout-panel">
+          <h3>Order Summary</h3>
+
+          <!-- Promo Code -->
+          <div class="promo-box">
+            <input type="text" id="promoInput" class="promo-input" placeholder="Kode Promo (cth: LUXE20)" />
+            <button type="button" id="applyPromoBtn" class="btn-promo">Apply</button>
+          </div>
+          <div class="promo-hint" id="promoFeedback">Coba kode: <strong>LUXE20</strong> (Diskon 20%) atau <strong>WELCOME10</strong> (10%)</div>
+
+          <!-- Customer & Shipping Form -->
+          <form id="checkoutForm">
+            <div class="form-group">
+              <label for="customerName">Nama Lengkap Penerima</label>
+              <input type="text" id="customerName" class="form-control" required placeholder="Cth: Nadia Pramesti" />
+            </div>
+
+            <div class="form-group">
+              <label for="customerAddress">Alamat Pengiriman & Kota</label>
+              <input type="text" id="customerAddress" class="form-control" required placeholder="Jl. Senopati No. 18, Jakarta Selatan" />
+            </div>
+
+            <div class="form-group">
+              <label for="shippingSelect">Metode Pengiriman</label>
+              <select id="shippingSelect" class="form-control">
+                <option value="regular">Standard Courier (2-3 Hari) — Rp 25.000</option>
+                <option value="express">Priority Express (Besok Sampai) — Rp 55.000</option>
+                <option value="sameday">Instant Same-Day Concierge — Rp 85.000</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="paymentSelect">Metode Pembayaran</label>
+              <select id="paymentSelect" class="form-control">
+                <option value="QRIS Instant">QRIS (GoPay, OVO, Dana, Mobile Banking)</option>
+                <option value="BCA Virtual Account">BCA Virtual Account</option>
+                <option value="Mandiri Virtual Account">Mandiri Virtual Account</option>
+                <option value="Visa / Mastercard">Kartu Kredit (Visa / Mastercard / JCB)</option>
+              </select>
+            </div>
+
+            <div class="summary-lines">
+              <div class="summary-line">
+                <span>Subtotal Produk</span>
+                <span id="summarySubtotal">Rp 0</span>
+              </div>
+              <div class="summary-line discount" id="summaryDiscountRow" style="display:none;">
+                <span id="summaryDiscountLabel">Diskon Promo</span>
+                <span id="summaryDiscount">-Rp 0</span>
+              </div>
+              <div class="summary-line">
+                <span>Estimasi Pengiriman</span>
+                <span id="summaryShipping">Rp 0</span>
+              </div>
+            </div>
+
+            <div class="summary-total">
+              <span>Total Pembayaran</span>
+              <span id="summaryTotal">Rp 0</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%;">
+              Complete Purchase →
+            </button>
+          </form>
+        </aside>
+      </div>
+
+      <!-- Empty Cart State -->
+      <div id="emptyCartState" style="display:none; text-align:center; padding:80px 20px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md);">
+        <div style="font-size:3rem; margin-bottom:12px;">🛍️</div>
+        <h2 style="font-family:var(--font-serif); font-size:2rem; margin-bottom:8px;">Your Shopping Bag is Empty</h2>
+        <p style="color:var(--text-secondary); margin-bottom:28px; max-width:400px; margin-inline:auto;">
+          Anda belum menambahkan koleksi apa pun ke dalam tas belanja. Jelajahi koleksi kapsul terbaru kami.
+        </p>
+        <a href="index.html" class="btn btn-primary">Discover Collection</a>
       </div>
     </div>
   </main>
 
-  <!-- ===== CHECKOUT MODAL ===== -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-icon">✅</div>
-      <h3>Order Placed!</h3>
-      <p>Thank you for your purchase. Your order is being processed.</p>
-      <button class="btn-primary" id="modalClose">Back to Home</button>
+  <!-- ===== ORDER RECEIPT MODAL ===== -->
+  <div class="modal-backdrop" id="receiptModalBackdrop">
+    <div class="receipt-modal">
+      <div style="width:56px; height:56px; border-radius:50%; background:#e9f7ef; color:var(--success); display:inline-flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:14px;">✓</div>
+      <div class="section-eyebrow">Order Confirmed</div>
+      <h3 style="font-family:var(--font-serif); font-size:2rem; margin-bottom:8px;">Thank You for Your Order</h3>
+      <p style="font-size:0.84rem; color:var(--text-secondary);">
+        Pesanan Anda telah diterima oleh tim concierge kami dan sedang dipersiapkan.
+      </p>
+
+      <div class="receipt-box" id="receiptDetails"></div>
+
+      <button class="btn btn-primary" id="finishOrderBtn" style="width:100%;">
+        Kembali ke Beranda
+      </button>
     </div>
   </div>
 
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <p>© 2026 LUXESTORE. All rights reserved.</p>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="padding-top:0; border:none;">
+        <span>© 2026 ATELIER LUXE. All rights reserved.</span>
+        <span>Complimentary Gift Packaging Included on Every Order</span>
+      </div>
+    </div>
   </footer>
 
   <script src="app.js"></script>
